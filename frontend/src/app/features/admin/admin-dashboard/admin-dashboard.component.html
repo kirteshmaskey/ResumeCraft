@@ -1,0 +1,90 @@
+<div class="admin-dashboard">
+  <div class="header">
+    <h2>Admin Control Center</h2>
+    <p class="subtitle">System Health & Live Configuration</p>
+  </div>
+
+  <div class="split-view">
+    <!-- Left: System Health -->
+    <div class="health-section glass-panel">
+      <h3><i class="fas fa-heartbeat"></i> System Health</h3>
+      
+      <div class="loading-state" *ngIf="isLoadingHealth">
+        <i class="fas fa-spinner fa-spin"></i> Checking components...
+      </div>
+
+      <div class="health-grid" *ngIf="health && !isLoadingHealth">
+        
+        <div class="health-card" [ngClass]="health.status">
+          <span class="label">Overall Status</span>
+          <span class="value">{{ health.status | uppercase }}</span>
+        </div>
+        
+        <div class="health-card" [ngClass]="health.components.database">
+          <span class="label">PostgreSQL</span>
+          <i class="fas" [ngClass]="health.components.database === 'ok' ? 'fa-check-circle' : 'fa-times-circle'"></i>
+          <span class="value">{{ health.components.database | uppercase }}</span>
+        </div>
+        
+        <div class="health-card" [ngClass]="health.components.redis">
+          <span class="label">Redis PubSub</span>
+          <i class="fas" [ngClass]="health.components.redis === 'ok' ? 'fa-check-circle' : 'fa-times-circle'"></i>
+          <span class="value">{{ health.components.redis | uppercase }}</span>
+        </div>
+        
+        <div class="health-card" [ngClass]="health.components.upstox_http">
+          <span class="label">Upstox API</span>
+          <i class="fas" [ngClass]="health.components.upstox_http === 'ok' ? 'fa-check-circle' : 'fa-times-circle'"></i>
+          <span class="value">{{ health.components.upstox_http | uppercase }}</span>
+        </div>
+
+      </div>
+      
+      <button class="btn btn-secondary mt-3" (click)="loadHealth()">
+        <i class="fas fa-sync-alt"></i> Refresh Status
+      </button>
+    </div>
+
+    <!-- Right: System Settings -->
+    <div class="settings-section glass-panel">
+      <h3><i class="fas fa-cogs"></i> Dynamic Settings</h3>
+      <p class="text-muted mb-3">Changes take effect immediately across all services without reboot.</p>
+      
+      <div class="loading-state" *ngIf="isLoadingSettings">
+         <i class="fas fa-spinner fa-spin"></i> Loading configuration...
+      </div>
+
+      <div class="settings-list" *ngIf="settings.length > 0 && !isLoadingSettings">
+        <div class="setting-item" *ngFor="let setting of settings">
+          <div class="setting-info">
+            <span class="key">{{ setting.key }}</span>
+            <span class="description" *ngIf="setting.description">{{ setting.description }}</span>
+            <span class="updated">Last updated: {{ setting.updated_at | date:'short' }}</span>
+          </div>
+          
+          <div class="setting-action">
+            <input type="text" [(ngModel)]="setting.value" class="form-control glass-input">
+            <button class="btn btn-primary" (click)="saveSetting(setting)" [disabled]="isSaving">
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="empty-state" *ngIf="settings.length === 0 && !isLoadingSettings">
+         No dynamic settings configured yet.
+      </div>
+      
+      <!-- Placeholder for adding new settings -->
+      <div class="add-setting mt-4 pt-3 border-top">
+         <h4>Add New Setting Variable</h4>
+         <div class="add-form">
+           <input type="text" placeholder="KEY_NAME" [(ngModel)]="newSetting.key" class="form-control glass-input">
+           <input type="text" placeholder="Value" [(ngModel)]="newSetting.value" class="form-control glass-input">
+           <button class="btn btn-success" (click)="addSetting()" [disabled]="!newSetting.key || !newSetting.value || isSaving">Add</button>
+         </div>
+      </div>
+
+    </div>
+  </div>
+</div>

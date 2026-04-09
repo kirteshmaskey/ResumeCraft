@@ -1,0 +1,25 @@
+# Python bytecode and cache files
+__pycache__
+*.pyc
+.mypy_cache
+.coverage
+htmlcov
+.cache
+
+# Virtual environments
+.venv
+.env
+
+# IDEs and editor configuration files
+.vscode
+.idea
+
+# Logs
+/logs
+
+# Data directories (except the one file we want to include)
+data/*
+!data/events.json
+
+# Miscellaneous
+*.egg-info

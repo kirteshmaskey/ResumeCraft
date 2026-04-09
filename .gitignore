@@ -1,0 +1,58 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment variables
+.env
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Database
+*.db
+*.sqlite3
+
+# Docker
+docker-compose.override.yml
+
+# Python distribution
+dist/
+build/
+*.egg-info/
+
+# Node (frontend)
+node_modules/
+trading-ui/dist/
+trading-ui/.angular/
+
+# ML Models (large files)
+models/*.pkl
+models/*.joblib
+models/*.bin
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Coverage
+htmlcov/
+.coverage
+coverage.xml

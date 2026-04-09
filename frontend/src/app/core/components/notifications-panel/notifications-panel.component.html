@@ -1,0 +1,47 @@
+<div class="notifications-container" [class.open]="isOpen">
+  <!-- Bell Toggle Button -->
+  <button class="bell-btn" (click)="togglePanel()" [class.has-unread]="(unreadCount$ | async)">
+    <i class="far fa-bell"></i>
+    <span class="badge" *ngIf="(unreadCount$ | async) as count">{{ count > 9 ? '9+' : count }}</span>
+  </button>
+
+  <!-- Flyout Panel -->
+  <div class="panel-dropdown glass-panel" *ngIf="isOpen">
+    <div class="panel-header">
+      <h4>Notifications</h4>
+      <button class="btn-text" (click)="markAllRead()" *ngIf="(unreadCount$ | async)">Mark all read</button>
+    </div>
+
+    <div class="panel-body">
+      <div class="empty-state" *ngIf="(notifications$ | async)?.length === 0">
+        <i class="fas fa-inbox"></i>
+        <p>No new notifications</p>
+      </div>
+
+      <div class="notification-list">
+        <div class="notification-item" 
+             *ngFor="let notif of (notifications$ | async)"
+             [class.unread]="!notif.is_read"
+             (click)="handleItemClick(notif)">
+          
+          <div class="icon-indicator" [ngClass]="notif.level.toLowerCase()">
+            <i class="fas" [ngClass]="getIconForCategory(notif.category)"></i>
+          </div>
+          
+          <div class="content">
+            <div class="title-row">
+              <span class="title">{{ notif.title }}</span>
+              <span class="time">{{ notif.created_at | date:'shortTime' }}</span>
+            </div>
+            <p class="message">{{ notif.message }}</p>
+          </div>
+          
+          <div class="unread-dot" *ngIf="!notif.is_read"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop to close panel when clicking outside -->
+<div class="backdrop" *ngIf="isOpen" (click)="closePanel()"></div>
