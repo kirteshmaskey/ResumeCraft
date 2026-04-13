@@ -1,0 +1,106 @@
+<div class="editor-page">
+    <!-- Header -->
+    <div class="page-header">
+        <div class="flex items-center gap-3">
+            <button class="btn btn-ghost btn-icon" (click)="goBack()" title="Back to gallery">
+                ←
+            </button>
+            <div>
+                <h2>{{ isEditMode() ? '✏️ Edit Template' : '✨ New Template' }}</h2>
+                <p class="page-subtitle">
+                    {{ isEditMode() ? 'Modify your LaTeX template' : 'Create a new LaTeX resume template' }}
+                </p>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button class="btn btn-secondary" (click)="compileAndDownload()"
+                [disabled]="compiling() || !latexCode.trim()">
+                @if (compiling()) {
+                <span class="spinner"></span> Compiling...
+                } @else {
+                📥 Compile PDF
+                }
+            </button>
+            <button class="btn btn-primary" (click)="save()" [disabled]="saving()">
+                @if (saving()) {
+                <span class="spinner"></span> Saving...
+                } @else {
+                💾 {{ isEditMode() ? 'Update' : 'Create' }}
+                }
+            </button>
+        </div>
+    </div>
+
+    <!-- Alerts -->
+    @if (error()) {
+    <div class="alert alert-error">
+        <span>⚠️</span> {{ error() }}
+        <button class="alert-close" (click)="error.set(null)">×</button>
+    </div>
+    }
+    @if (success()) {
+    <div class="alert alert-success">
+        <span>✅</span> {{ success() }}
+    </div>
+    }
+
+    <!-- Loading -->
+    @if (loading()) {
+    <div class="loading-container">
+        <div class="spinner spinner-lg"></div>
+        <p class="text-muted mt-3">Loading template...</p>
+    </div>
+    }
+
+    <!-- Form -->
+    @if (!loading()) {
+    <div class="editor-layout">
+        <!-- Sidebar Meta -->
+        <aside class="editor-sidebar">
+            <div class="form-group">
+                <label class="form-label" for="template-name">Template Name</label>
+                <input id="template-name" class="form-input" type="text" [(ngModel)]="name"
+                    placeholder="e.g. Modern Professional" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="template-category">Category</label>
+                <select id="template-category" class="form-input" [(ngModel)]="category">
+                    @for (cat of categories; track cat.value) {
+                    <option [value]="cat.value">{{ cat.label }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="template-desc">Description</label>
+                <textarea id="template-desc" class="form-textarea" [(ngModel)]="description"
+                    placeholder="Short description of the template style..." rows="3"></textarea>
+            </div>
+
+            <div class="info-box">
+                <h4>💡 Template Tips</h4>
+                <ul>
+                    <li>Use <code>&lt;&lt; data.field &gt;&gt;</code> for variables</li>
+                    <li>Use <code>&lt;&lt;% for ... %&gt;&gt;</code> for loops</li>
+                    <li>Use <code>&lt;&lt;% if ... %&gt;&gt;</code> for conditionals</li>
+                    <li>Use <code>| latex_escape</code> filter for user text</li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Code Editor -->
+        <div class="editor-main">
+            <div class="form-group">
+                <label class="form-label">LaTeX Code (Jinja2 Template)</label>
+                <textarea class="form-textarea code-textarea" [(ngModel)]="latexCode" placeholder="\\documentclass[11pt,a4paper]{article}
+\\begin{document}
+
+{\\Huge \\textbf{<< data.personal_info.name | latex_escape >>}}
+
+\\end{document}" rows="30" spellcheck="false"></textarea>
+            </div>
+        </div>
+    </div>
+    }
+</div>

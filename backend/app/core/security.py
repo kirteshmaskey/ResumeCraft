@@ -1,46 +1,19 @@
 """
-Security utilities: JWT token management and Fernet encryption
-for securing Upstox access tokens at rest.
+Security utilities: JWT token management and password hashing.
 """
 
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from jose import jwt, JWTError
-from cryptography.fernet import Fernet
 from passlib.context import CryptContext
 
 from app.core.config import get_settings
 
 settings = get_settings()
 
-# ── Password Hashing (if needed for local auth) ─────────────────────────
+# ── Password Hashing ─────────────────────────────────────────────────────
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# ── Fernet Encryption (for Upstox tokens at rest) ───────────────────────
-_fernet: Optional[Fernet] = None
-
-
-def get_fernet() -> Fernet:
-    """Get or create Fernet cipher for token encryption."""
-    global _fernet
-    if _fernet is None:
-        if not settings.FERNET_KEY:
-            raise ValueError(
-                "FERNET_KEY not set. Generate one with: "
-                "python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'"
-            )
-        _fernet = Fernet(settings.FERNET_KEY.encode())
-    return _fernet
-
-
-def encrypt_token(token: str) -> str:
-    """Encrypt a token (e.g., Upstox access_token) for storage in Redis."""
-    return get_fernet().encrypt(token.encode()).decode()
-
-
-def decrypt_token(encrypted_token: str) -> str:
-    """Decrypt a stored token back to plaintext."""
-    return get_fernet().decrypt(encrypted_token.encode()).decode()
 
 
 # ── JWT Creation ─────────────────────────────────────────────────────────

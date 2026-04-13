@@ -8,10 +8,13 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Install system dependencies
+# Install system dependencies (including LaTeX for PDF compilation)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
+    texlive-latex-base \
+    texlive-latex-extra \
+    texlive-fonts-recommended \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

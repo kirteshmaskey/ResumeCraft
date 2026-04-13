@@ -10,4 +10,5 @@ from app.core.database import Base  # noqa: F401
 # Import all models for discovery
 from app.models.user import User # noqa: F401
 from app.models.resume import MasterResume, GeneratedResume # noqa: F401
+from app.models.template import ResumeTemplate  # noqa: F401
 

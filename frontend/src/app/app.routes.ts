@@ -29,6 +29,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'templates',
+        loadChildren: () =>
+          import('./features/templates/templates.routes').then(
+            (m) => m.TEMPLATE_ROUTES
+          ),
+      },
+      {
         path: 'resumes',
         loadChildren: () =>
           import('./features/resumes/resumes.routes').then(

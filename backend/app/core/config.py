@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
+    # ── AI / OpenAI ──────────────────────────────────────────────────────
+    OPENAI_API_KEY: str = ""  # Optional — fallback mode when empty
+
     # ── Celery ───────────────────────────────────────────────────────────
     CELERY_BROKER_URL: str = "redis://localhost:6379/1"
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/2"

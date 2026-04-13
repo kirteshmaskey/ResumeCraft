@@ -17,6 +17,8 @@ from app.core.exceptions import (
     http_exception_handler,
     generic_exception_handler,
 )
+from app.api.templates import router as templates_router
+from app.api.generation import router as generation_router
 
 settings = get_settings()
 logger = get_logger("app")
@@ -77,8 +79,16 @@ def create_app() -> FastAPI:
     app.add_exception_handler(Exception, generic_exception_handler)
 
     # ── Routers ──────────────────────────────────────────────────────
-    # TODO: Add feature routers here
-    # app.include_router(auth_router, prefix="/api/v1/auth", tags=["Authentication"])
+    from app.api.auth import router as auth_router
+    app.include_router(
+        auth_router, prefix="/api/v1/auth", tags=["Authentication"]
+    )
+    app.include_router(
+        templates_router, prefix="/api/v1/templates", tags=["Templates"]
+    )
+    app.include_router(
+        generation_router, prefix="/api/v1/generation", tags=["Generation"]
+    )
 
     # ── Health Check ─────────────────────────────────────────────────
     @app.get("/health", tags=["System"])

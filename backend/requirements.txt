@@ -7,6 +7,7 @@ fastapi==0.115.6
 uvicorn[standard]==0.34.0
 gunicorn==23.0.0
 pydantic==2.10.5
+pydantic[email]==2.10.5
 pydantic-settings==2.7.1
 
 # ── Database & Cache ─────────────────────────────────────────────────────
@@ -14,8 +15,15 @@ sqlalchemy==2.0.36
 asyncpg==0.30.0
 redis==5.2.1
 
+# ── Template Rendering ───────────────────────────────────────────────
+jinja2==3.1.4
+langchain==0.3.7
+langchain-openai==0.2.6
+openai==1.54.3
+
 # ── Utilities ────────────────────────────────────────────────────────────
 python-dotenv==1.0.1
-passlib[bcrypt]==1.7.4
+passlib==1.7.4
+bcrypt==3.2.0
 python-jose[cryptography]==3.3.0
 python-multipart==0.0.9

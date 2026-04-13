@@ -16,8 +16,6 @@ export interface TokenResponse {
   access_token: string;
   refresh_token: string;
   token_type: string;
-  expires_in: number;
-  user: User;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -44,40 +42,25 @@ export class AuthService {
     return localStorage.getItem('refresh_token');
   }
 
-  demoLogin(): void {
-    const dummyUser: User = {
-      id: 'demo-user-123',
-      email: 'demo@resumecraft.ai',
-      name: 'Demo User',
-      is_active: true,
-      created_at: new Date().toISOString()
-    };
-
-    this.storeTokens('fake-access-token', 'fake-refresh-token');
-    this.userSubject.next(dummyUser);
-    this.router.navigate(['/dashboard']);
-  }
-
-  /** Get the login URL from the backend */
-  getLoginUrl(): Observable<{ url: string }> {
-    return this.api.get<{ url: string }>('/auth/login-url');
-  }
-
-  /** Exchange OAuth code for JWT tokens */
-  handleCallback(code: string): Observable<TokenResponse> {
-    return this.api.get<TokenResponse>('/auth/callback', { code }).pipe(
+  /** Login with email and password */
+  login(credentials: { email: string; password: string }): Observable<TokenResponse> {
+    return this.api.post<TokenResponse>('/auth/login', credentials).pipe(
       tap((res) => {
         this.storeTokens(res.access_token, res.refresh_token);
-        this.userSubject.next(res.user);
+        // User data can be explicitly loaded after login or we can decode from JWT if needed
       })
     );
   }
 
-  private refreshObservable: Observable<{ access_token: string; expires_in: number }> | null =
-    null;
+  /** Signup a new user */
+  signup(data: { full_name: string; email: string; password: string }): Observable<User> {
+    return this.api.post<User>('/auth/signup', data);
+  }
+
+  private refreshObservable: Observable<TokenResponse> | null = null;
 
   /** Refresh the access token using the refresh token */
-  refreshToken(): Observable<{ access_token: string; expires_in: number }> {
+  refreshToken(): Observable<TokenResponse> {
     if (this.refreshObservable) {
       return this.refreshObservable;
     }
@@ -91,13 +74,13 @@ export class AuthService {
     this.isRefreshing = true;
 
     this.refreshObservable = this.api
-      .post<{ access_token: string; expires_in: number }>('/auth/refresh', {
+      .post<TokenResponse>('/auth/refresh', {
         refresh_token: refreshToken,
       })
       .pipe(
         tap((res) => {
           console.log('[Auth] Refresh successful');
-          localStorage.setItem('access_token', res.access_token);
+          this.storeTokens(res.access_token, res.refresh_token);
         }),
         shareReplay(1),
         catchError((err) => {

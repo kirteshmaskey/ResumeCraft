@@ -1,0 +1,136 @@
+.gallery-page {
+    padding: 8px;
+}
+
+/* ── Category Filter ─────────────────────────────────────────────── */
+.category-filter {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 100px;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+
+    &:hover {
+        border-color: var(--border-default);
+        color: var(--text-primary);
+        background: var(--bg-surface-hover);
+    }
+
+    &.active {
+        background: var(--primary-light);
+        border-color: var(--primary);
+        color: var(--text-accent);
+    }
+
+    .chip-icon {
+        font-size: 0.875rem;
+    }
+}
+
+/* ── Loading ──────────────────────────────────────────────────────── */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+}
+
+/* ── Template Grid ────────────────────────────────────────────────── */
+.template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.template-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    overflow: hidden;
+    padding: 0;
+
+    .card-preview {
+        height: 180px;
+        background: linear-gradient(135deg, var(--bg-elevated), var(--bg-input));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 1px solid var(--border-subtle);
+        overflow: hidden;
+    }
+
+    .preview-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .preview-icon {
+            font-size: 3rem;
+            opacity: 0.3;
+        }
+    }
+
+    .card-body {
+        padding: 16px 20px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .card-top-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .card-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .card-desc {
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .delete-btn {
+        opacity: 0;
+        transition: opacity var(--transition-fast);
+        width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
+    }
+
+    &:hover .delete-btn {
+        opacity: 1;
+    }
+}
+
+/* ── Badge Variants ───────────────────────────────────────────────── */
+.badge-purple {
+    background: rgba(168, 85, 247, 0.15);
+    color: #a855f7;
+}

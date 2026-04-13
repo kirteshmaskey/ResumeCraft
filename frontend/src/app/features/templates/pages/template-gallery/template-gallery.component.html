@@ -1,0 +1,75 @@
+<div class="gallery-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h2>📋 Resume Templates</h2>
+      <p class="page-subtitle">Choose a template to customize your resume</p>
+    </div>
+    <a routerLink="new" class="btn btn-primary btn-lg">
+      <span>+</span> New Template
+    </a>
+  </div>
+
+  <!-- Category Filter -->
+  <div class="category-filter">
+    @for (cat of categories; track cat.value) {
+      <button
+        class="filter-chip"
+        [class.active]="activeCategory() === cat.value"
+        (click)="loadTemplates(cat.value)"
+      >
+        <span class="chip-icon">{{ cat.icon }}</span>
+        {{ cat.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading-container">
+      <div class="spinner spinner-lg"></div>
+      <p class="text-muted mt-3">Loading templates...</p>
+    </div>
+  }
+
+  <!-- Template Grid -->
+  @if (!loading() && templates().length > 0) {
+    <div class="template-grid">
+      @for (template of templates(); track template.id) {
+        <a [routerLink]="[template.id, 'edit']" class="template-card card card-interactive">
+          <div class="card-preview">
+            <div class="preview-placeholder">
+              <span class="preview-icon">📄</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-top-row">
+              <span class="badge" [ngClass]="getCategoryBadgeClass(template.category)">
+                {{ template.category }}
+              </span>
+              <button class="btn btn-icon btn-ghost delete-btn" (click)="deleteTemplate(template.id, $event)" title="Delete template">
+                🗑️
+              </button>
+            </div>
+            <h3 class="card-title">{{ template.name }}</h3>
+            <p class="card-desc">{{ template.description || 'No description' }}</p>
+          </div>
+        </a>
+      }
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && templates().length === 0) {
+    <div class="empty-state">
+      <div class="icon">📝</div>
+      <div class="title">No Templates Found</div>
+      <div class="description">
+        Create your first LaTeX resume template to get started.
+      </div>
+      <a routerLink="new" class="btn btn-primary mt-4">
+        Create Template
+      </a>
+    </div>
+  }
+</div>

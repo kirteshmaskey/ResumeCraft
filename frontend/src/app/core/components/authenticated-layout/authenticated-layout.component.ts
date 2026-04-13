@@ -19,6 +19,7 @@ export class AuthenticatedLayoutComponent implements OnInit, OnDestroy {
 
     private readonly titleMap: Record<string, string> = {
         '/dashboard': 'Dashboard',
+        '/templates': 'Resume Templates',
         '/resumes': 'Master Resumes',
         '/generator': 'AI Generator',
         '/settings': 'Settings',

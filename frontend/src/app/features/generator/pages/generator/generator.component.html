@@ -1,0 +1,190 @@
+<div class="generator-page">
+    <!-- Wizard Steps Indicator -->
+    <div class="wizard-steps">
+        <div class="step-item" [class.active]="currentStep() === 'template'"
+            [class.completed]="currentStep() !== 'template'">
+            <div class="step-number">1</div>
+            <span class="step-label">Select Template</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item" [class.active]="currentStep() === 'input'"
+            [class.completed]="currentStep() === 'result'">
+            <div class="step-number">2</div>
+            <span class="step-label">Resume & JD</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item" [class.active]="currentStep() === 'result'">
+            <div class="step-number">3</div>
+            <span class="step-label">Generate & Download</span>
+        </div>
+    </div>
+
+    <!-- Alert -->
+    @if (error()) {
+    <div class="alert alert-error">
+        <span>⚠️</span> {{ error() }}
+        <button class="alert-close" (click)="error.set(null)">×</button>
+    </div>
+    }
+
+    <!-- ═══════════════ STEP 1: SELECT TEMPLATE ═══════════════ -->
+    @if (currentStep() === 'template') {
+    <div class="step-content">
+        <div class="step-header">
+            <h2>📋 Choose a Resume Template</h2>
+            <p class="page-subtitle">Select the LaTeX template that best fits your style</p>
+        </div>
+
+        @if (loading()) {
+        <div class="loading-container">
+            <div class="spinner spinner-lg"></div>
+            <p class="text-muted mt-3">Loading templates...</p>
+        </div>
+        }
+
+        @if (!loading() && templates().length > 0) {
+        <div class="template-select-grid">
+            @for (template of templates(); track template.id) {
+            <div class="template-select-card" [class.selected]="selectedTemplateId() === template.id"
+                (click)="selectTemplate(template.id)">
+                <div class="select-indicator">
+                    @if (selectedTemplateId() === template.id) {
+                    <span class="check">✓</span>
+                    }
+                </div>
+                <div class="template-icon">📄</div>
+                <h4>{{ template.name }}</h4>
+                <p>{{ template.description || 'No description' }}</p>
+                <span class="badge badge-primary">{{ template.category }}</span>
+            </div>
+            }
+        </div>
+
+        <div class="step-actions">
+            <div></div>
+            <button class="btn btn-primary btn-lg" (click)="goToInput()" [disabled]="!selectedTemplateId()">
+                Continue →
+            </button>
+        </div>
+        }
+
+        @if (!loading() && templates().length === 0) {
+        <div class="empty-state">
+            <div class="icon">📝</div>
+            <div class="title">No Templates Available</div>
+            <div class="description">Create templates in the Templates section first.</div>
+            <a routerLink="/templates/new" class="btn btn-primary mt-4">Create Template</a>
+        </div>
+        }
+    </div>
+    }
+
+    <!-- ═══════════════ STEP 2: INPUT ═══════════════ -->
+    @if (currentStep() === 'input') {
+    <div class="step-content">
+        <div class="step-header">
+            <h2>📝 Paste Your Content</h2>
+            <p class="page-subtitle">
+                Using template: <strong>{{ getSelectedTemplateName() }}</strong>
+            </p>
+        </div>
+
+        <div class="input-layout">
+            <div class="input-panel">
+                <div class="form-group">
+                    <label class="form-label">Master Resume (full text)</label>
+                    <textarea class="form-textarea" [(ngModel)]="masterResumeText"
+                        placeholder="Paste your complete master resume text here. Include all work experience, education, skills, projects, and certifications..."
+                        rows="14"></textarea>
+                </div>
+            </div>
+
+            <div class="input-panel">
+                <div class="form-group">
+                    <label class="form-label">Job Description (target role)</label>
+                    <textarea class="form-textarea" [(ngModel)]="jobDescription"
+                        placeholder="Paste the full job description for the role you're applying to. Include requirements, responsibilities, and preferred qualifications..."
+                        rows="14"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-actions">
+            <button class="btn btn-secondary" (click)="goToTemplateStep()">
+                ← Back
+            </button>
+            <button class="btn btn-primary btn-lg" (click)="generateResume()"
+                [disabled]="generating() || !masterResumeText.trim() || !jobDescription.trim()">
+                @if (generating()) {
+                <span class="spinner"></span> Generating...
+                } @else {
+                ✨ Generate Tailored Resume
+                }
+            </button>
+        </div>
+    </div>
+    }
+
+    <!-- ═══════════════ STEP 3: RESULT ═══════════════ -->
+    @if (currentStep() === 'result') {
+    <div class="step-content">
+        <div class="step-header">
+            <div>
+                <h2>🎉 Resume Generated</h2>
+                <p class="page-subtitle">Review the LaTeX source, edit if needed, then download as PDF</p>
+            </div>
+            <div class="flex gap-2">
+                <button class="btn btn-secondary" (click)="goBackToInput()">
+                    ← Regenerate
+                </button>
+                <button class="btn btn-ghost" (click)="startOver()">
+                    🔄 Start Over
+                </button>
+            </div>
+        </div>
+
+        <div class="result-layout">
+            <div class="editor-panel">
+                <div class="form-group">
+                    <label class="form-label">Generated LaTeX Source (editable)</label>
+                    <textarea class="form-textarea code-textarea" [(ngModel)]="editableLatex" rows="24"
+                        spellcheck="false"></textarea>
+                </div>
+
+                <div class="action-bar mt-3">
+                    <button class="btn btn-primary" (click)="$event.stopPropagation(); previewPdf()"
+                        [disabled]="compiling() || !editableLatex.trim()">
+                        @if (compiling()) {
+                        <span class="spinner"></span> Compiling...
+                        } @else {
+                        🛠️ Compile & Preview
+                        }
+                    </button>
+                </div>
+            </div>
+
+            <div class="preview-panel">
+                <label class="form-label">PDF Preview</label>
+                <div class="preview-container">
+                    @if (pdfUrl()) {
+                    <iframe [src]="pdfUrl()" class="pdf-frame"></iframe>
+                    } @else {
+                    <div class="preview-placeholder">
+                        <div class="icon">📄</div>
+                        <p>Click "Compile & Preview" to see the PDF here</p>
+                    </div>
+                    }
+                </div>
+
+                @if (pdfUrl()) {
+                <div class="download-footer mt-3">
+                    <button class="btn btn-success btn-lg w-full" (click)="downloadPdf()">
+                        📥 Download PDF
+                    </button>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+    }
+</div>

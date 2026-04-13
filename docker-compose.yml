@@ -25,10 +25,7 @@ services:
     build: ./backend
     container_name: resumecraft_api
     restart: always
-    environment:
-      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/resumecraft
-      - REDIS_URL=redis://redis:6379/0
-      - JWT_SECRET_KEY=dev-secret-key-change-me
+    env_file: ./backend/.env
     ports:
       - "8000:8000"
     depends_on:

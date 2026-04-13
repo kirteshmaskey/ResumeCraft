@@ -7,10 +7,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const token = authService.getAccessToken();
 
-  // Skip auth header for login-url and callback requests
-  const isAuthRequest = req.url.includes('/auth/login-url') ||
-                        req.url.includes('/auth/callback') ||
-                        req.url.includes('/auth/refresh');
+  // Skip auth header for auth endpoints
+  const isAuthRequest = req.url.includes('/auth/login') ||
+    req.url.includes('/auth/signup') ||
+    req.url.includes('/auth/refresh');
 
   let authReq = req;
   if (token && !isAuthRequest) {

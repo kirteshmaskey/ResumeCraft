@@ -1,0 +1,128 @@
+.editor-page {
+    padding: 8px;
+}
+
+/* ── Alert ────────────────────────────────────────────────────────── */
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    margin-bottom: 20px;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: var(--error);
+}
+
+.alert-success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.25);
+    color: var(--success);
+}
+
+.alert-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.6;
+    padding: 0 4px;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+/* ── Layout ───────────────────────────────────────────────────────── */
+.editor-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 24px;
+    min-height: 60vh;
+}
+
+@media (max-width: 900px) {
+    .editor-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────────── */
+.editor-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.info-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 16px;
+
+    h4 {
+        font-size: 0.875rem;
+        margin-bottom: 10px;
+        color: var(--text-primary);
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    li {
+        font-size: 0.8125rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+    }
+
+    code {
+        background: var(--bg-input);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        color: var(--text-accent);
+        font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    }
+}
+
+/* ── Code Editor ──────────────────────────────────────────────────── */
+.editor-main {
+    .form-textarea {
+        min-height: 500px;
+        resize: vertical;
+    }
+}
+
+/* ── Loading ──────────────────────────────────────────────────────── */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+}

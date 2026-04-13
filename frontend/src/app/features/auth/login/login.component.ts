@@ -1,12 +1,14 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConfigService } from '../../../core/services/config.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="login-container">
       <div class="login-card">
@@ -27,28 +29,32 @@ import { ConfigService } from '../../../core/services/config.service';
           <p class="tagline">AI-Powered Resume Optimization</p>
         </div>
 
-        <div class="features">
-          <div class="feature-item">
-            <span class="feature-icon">📁</span>
-            <span>Manage Master Resumes</span>
+        <div class="tabs">
+          <button [class.active]="isLogin" (click)="toggleMode()">Sign In</button>
+          <button [class.active]="!isLogin" (click)="toggleMode()">Sign Up</button>
+        </div>
+
+        <div class="form-section">
+          <div class="form-group" *ngIf="!isLogin">
+            <input type="text" class="form-control" placeholder="Full Name" [(ngModel)]="fullName" />
           </div>
-          <div class="feature-item">
-            <span class="feature-icon">✨</span>
-            <span>AI-tailored job applications</span>
+          <div class="form-group">
+            <input type="email" class="form-control" placeholder="Email Address" [(ngModel)]="email" />
           </div>
-          <div class="feature-item">
-            <span class="feature-icon">📊</span>
-            <span>Track application history</span>
+          <div class="form-group">
+            <input type="password" class="form-control" placeholder="Password" [(ngModel)]="password" />
           </div>
         </div>
 
-        <button class="login-btn" (click)="login()" [disabled]="isLoading">
+        <div *ngIf="errorMessage" class="error-msg">{{ errorMessage }}</div>
+
+        <button class="login-btn" (click)="submit()" [disabled]="isLoading">
           <span *ngIf="!isLoading" class="btn-content">
-            Enter ResumeCraft
+            {{ isLogin ? 'Sign In' : 'Sign Up' }}
           </span>
           <span *ngIf="isLoading" class="btn-content">
             <span class="spinner"></span>
-            Starting...
+            Processing...
           </span>
         </button>
       </div>
@@ -95,26 +101,58 @@ import { ConfigService } from '../../../core/services/config.service';
       margin: 0;
     }
 
-    .features {
+    .tabs {
+      display: flex;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .tabs button {
+      flex: 1;
+      padding: 0.75rem;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      font-weight: 600;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tabs button.active {
+      color: #3b82f6;
+      border-bottom-color: #3b82f6;
+    }
+
+    .form-section {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
-      margin-bottom: 2rem;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
     }
 
-    .feature-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      color: #475569;
-      font-size: 0.875rem;
-      text-align: left;
-      padding: 0.5rem 1rem;
-      background: #f1f5f9;
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #e2e8f0;
       border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.875rem;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
     }
 
-    .feature-icon { font-size: 1.25rem; }
+    .form-control:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+
+    .error-msg {
+      color: #ef4444;
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+      text-align: left;
+    }
 
     .login-btn {
       width: 100%;
@@ -161,16 +199,63 @@ import { ConfigService } from '../../../core/services/config.service';
 })
 export class LoginComponent {
   isLoading = false;
+  isLogin = true;
+  email = '';
+  password = '';
+  fullName = '';
+  errorMessage = '';
+
   configService = inject(ConfigService);
+  private router = inject(Router);
 
   constructor(private authService: AuthService) { }
 
-  login(): void {
+  toggleMode(): void {
+    this.isLogin = !this.isLogin;
+    this.errorMessage = '';
+  }
+
+  submit(): void {
+    this.errorMessage = '';
+
+    if (!this.email || !this.password || (!this.isLogin && !this.fullName)) {
+      this.errorMessage = 'Please fill out all fields.';
+      return;
+    }
+
     this.isLoading = true;
-    // For now, just demo login
-    setTimeout(() => {
-      this.authService.demoLogin();
-      this.isLoading = false;
-    }, 500);
+
+    if (this.isLogin) {
+      this.authService.login({ email: this.email, password: this.password }).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.router.navigate(['/dashboard']);
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.errorMessage = err?.error?.detail || 'Invalid email or password.';
+        }
+      });
+    } else {
+      this.authService.signup({ email: this.email, password: this.password, full_name: this.fullName }).subscribe({
+        next: () => {
+          // Log user in automatically after sign up
+          this.authService.login({ email: this.email, password: this.password }).subscribe({
+            next: () => {
+              this.isLoading = false;
+              this.router.navigate(['/dashboard']);
+            },
+            error: () => {
+              this.isLoading = false;
+              this.router.navigate(['/auth/login']); // fallback
+            }
+          })
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.errorMessage = err?.error?.detail || 'Sign up failed.';
+        }
+      });
+    }
   }
 }

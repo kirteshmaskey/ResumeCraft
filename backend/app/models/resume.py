@@ -20,6 +20,8 @@ class GeneratedResume(Base):
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
     master_resume_id = Column(String, ForeignKey("master_resumes.id"), nullable=False)
+    template_id = Column(String, ForeignKey("resume_templates.id"), nullable=True)
     job_description = Column(Text, nullable=False)
     optimized_content = Column(JSON, nullable=False)
+    latex_source = Column(Text, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
