@@ -1,0 +1,47 @@
+<div class="dialog-overlay" (click)="close.emit()">
+    <div class="dialog-content" (click)="$event.stopPropagation()">
+        <div class="dialog-header">
+            <h2>Add Master Resume</h2>
+            <button class="close-btn" (click)="close.emit()">&times;</button>
+        </div>
+
+        <form (submit)="onSubmit($event)">
+            <div class="form-group">
+                <label for="name">Resume Name</label>
+                <input type="text" id="name" [(ngModel)]="name" name="name" placeholder="e.g. My Main Resume 2024"
+                    required>
+            </div>
+
+            <div class="tabs">
+                <button type="button" [class.active]="uploadType === 'text'" (click)="uploadType = 'text'">Paste
+                    Text</button>
+                <button type="button" [class.active]="uploadType === 'file'" (click)="uploadType = 'file'">Upload
+                    PDF</button>
+            </div>
+
+            <div *ngIf="uploadType === 'text'" class="form-group">
+                <label for="textContent">Resume Text</label>
+                <textarea id="textContent" [(ngModel)]="textContent" name="textContent" rows="10"
+                    placeholder="Paste your resume content here..." required></textarea>
+            </div>
+
+            <div *ngIf="uploadType === 'file'" class="form-group">
+                <label for="file">PDF File</label>
+                <div class="file-upload">
+                    <input type="file" id="file" (change)="onFileSelected($event)" accept=".pdf">
+                    <p *ngIf="selectedFile" class="selected-filename">{{ selectedFile.name }}</p>
+                    <p *ngIf="!selectedFile" class="file-hint">Select a PDF file for text extraction</p>
+                </div>
+            </div>
+
+            <div *ngIf="error" class="error-msg">{{ error }}</div>
+
+            <div class="dialog-footer">
+                <button type="button" class="btn btn-secondary" (click)="close.emit()">Cancel</button>
+                <button type="submit" class="btn btn-primary" [disabled]="loading || !isValid()">
+                    {{ loading ? 'Processing...' : 'Add Resume' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environment';
 export class ApiService {
   private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   get<T>(endpoint: string, params?: any): Observable<T> {
     return this.http.get<T>(`${this.baseUrl}${endpoint}`, { params });
@@ -15,6 +15,12 @@ export class ApiService {
 
   post<T>(endpoint: string, body?: any): Observable<T> {
     return this.http.post<T>(`${this.baseUrl}${endpoint}`, body);
+  }
+
+  postBlob(endpoint: string, body?: any): Observable<Blob> {
+    return this.http.post(`${this.baseUrl}${endpoint}`, body, {
+      responseType: 'blob'
+    });
   }
 
   put<T>(endpoint: string, body?: any): Observable<T> {

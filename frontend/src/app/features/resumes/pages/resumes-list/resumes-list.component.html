@@ -1,0 +1,31 @@
+<div class="page-container">
+    <div class="header">
+        <button class="btn btn-primary" (click)="showAddDialog.set(true)">Add New Resume</button>
+    </div>
+
+    <div *ngIf="loading()" class="loading">
+        <div class="spinner"></div>
+        <p>Loading resumes...</p>
+    </div>
+
+    <div *ngIf="!loading() && resumes().length === 0" class="empty-state">
+        <div class="icon">📝</div>
+        <p>You haven't added any master resumes yet.</p>
+        <button class="btn btn-secondary" (click)="showAddDialog.set(true)">Add your first resume</button>
+    </div>
+
+    <div *ngIf="!loading() && resumes().length > 0" class="resume-grid">
+        <div *ngFor="let resume of resumes()" class="resume-card">
+            <div class="resume-info">
+                <h3>{{ resume.name }}</h3>
+                <p class="date">Updated: {{ resume.updated_at | date:'mediumDate' }}</p>
+            </div>
+            <div class="resume-actions">
+                <button class="btn btn-danger" (click)="deleteResume(resume.id)">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <app-add-resume-dialog *ngIf="showAddDialog()" (close)="showAddDialog.set(false)" (saved)="loadResumes()">
+    </app-add-resume-dialog>
+</div>

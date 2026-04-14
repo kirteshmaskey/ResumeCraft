@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { ApiService } from './api.service';
 
 export interface ResumeTemplate {
     id: string;
@@ -42,34 +41,34 @@ export interface TemplateUpdatePayload {
 
 @Injectable({ providedIn: 'root' })
 export class TemplateService {
-    private readonly baseUrl = `${environment.apiUrl}/templates`;
+    private readonly endpoint = '/templates';
 
-    constructor(private http: HttpClient) { }
+    constructor(private api: ApiService) { }
 
     /** List all active templates */
     list(category?: string): Observable<TemplateListItem[]> {
         const params: any = {};
         if (category) params.category = category;
-        return this.http.get<TemplateListItem[]>(this.baseUrl, { params });
+        return this.api.get<TemplateListItem[]>(this.endpoint, params);
     }
 
     /** Get a single template by ID (includes full latex_code) */
     get(id: string): Observable<ResumeTemplate> {
-        return this.http.get<ResumeTemplate>(`${this.baseUrl}/${id}`);
+        return this.api.get<ResumeTemplate>(`${this.endpoint}/${id}`);
     }
 
     /** Create a new template */
     create(payload: TemplateCreatePayload): Observable<ResumeTemplate> {
-        return this.http.post<ResumeTemplate>(this.baseUrl, payload);
+        return this.api.post<ResumeTemplate>(this.endpoint, payload);
     }
 
     /** Update an existing template */
     update(id: string, payload: TemplateUpdatePayload): Observable<ResumeTemplate> {
-        return this.http.put<ResumeTemplate>(`${this.baseUrl}/${id}`, payload);
+        return this.api.put<ResumeTemplate>(`${this.endpoint}/${id}`, payload);
     }
 
     /** Soft-delete a template */
     delete(id: string): Observable<void> {
-        return this.http.delete<void>(`${this.baseUrl}/${id}`);
+        return this.api.delete<void>(`${this.endpoint}/${id}`);
     }
 }

@@ -80,8 +80,12 @@ def create_app() -> FastAPI:
 
     # ── Routers ──────────────────────────────────────────────────────
     from app.api.auth import router as auth_router
+    from app.api.resumes import router as resumes_router
     app.include_router(
         auth_router, prefix="/api/v1/auth", tags=["Authentication"]
+    )
+    app.include_router(
+        resumes_router, prefix="/api/v1/resumes", tags=["Resumes"]
     )
     app.include_router(
         templates_router, prefix="/api/v1/templates", tags=["Templates"]

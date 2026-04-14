@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
-    selector: 'app-dashboard',
-    standalone: true,
-    imports: [CommonModule, RouterModule],
-    template: `
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  template: `
     <div class="page-container">
       <div class="welcome-section">
         <h1>Welcome to ResumeCraft</h1>
@@ -45,10 +45,10 @@ import { RouterModule } from '@angular/router';
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     .page-container { padding: 2rem; }
     .welcome-section { margin-bottom: 3rem; }
-    .welcome-section h1 { font-size: 2.5rem; margin-bottom: 0.5rem; color: #111827; }
+    .welcome-section h1 { font-size: 2.5rem; margin-bottom: 0.5rem }
     .welcome-section p { font-size: 1.125rem; color: #4b5563; }
     
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }

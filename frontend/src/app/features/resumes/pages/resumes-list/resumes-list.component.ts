@@ -1,26 +1,42 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ResumeService, MasterResume } from '../../../../core/services/resume.service';
+import { AddResumeDialogComponent } from '../../components/add-resume-dialog/add-resume-dialog.component';
 
 @Component({
-    selector: 'app-resumes-list',
-    standalone: true,
-    imports: [CommonModule],
-    template: `
-    <div class="page-container">
-      <div class="header">
-        <h1>Master Resumes</h1>
-        <button class="btn-primary">Add New Resume</button>
-      </div>
-      <div class="empty-state">
-        <p>You haven't added any master resumes yet.</p>
-      </div>
-    </div>
-  `,
-    styles: [`
-    .page-container { padding: 2rem; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-    .empty-state { text-align: center; padding: 4rem; background: #f9fafb; border-radius: 8px; border: 2px dashed #e5e7eb; }
-    .btn-primary { background: #3b82f6; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; }
-  `]
+  selector: 'app-resumes-list',
+  standalone: true,
+  imports: [CommonModule, AddResumeDialogComponent],
+  templateUrl: './resumes-list.component.html',
+  styleUrls: ['./resumes-list.component.scss']
 })
-export class ResumesListComponent { }
+export class ResumesListComponent implements OnInit {
+  resumes = signal<MasterResume[]>([]);
+  loading = signal(true);
+  showAddDialog = signal(false);
+
+  constructor(private resumeService: ResumeService) { }
+
+  ngOnInit(): void {
+    this.loadResumes();
+  }
+
+  loadResumes(): void {
+    this.loading.set(true);
+    this.resumeService.list().subscribe({
+      next: (resumes) => {
+        this.resumes.set(resumes);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false)
+    });
+  }
+
+  deleteResume(id: string): void {
+    if (confirm('Are you sure you want to delete this resume?')) {
+      this.resumeService.delete(id).subscribe({
+        next: () => this.loadResumes()
+      });
+    }
+  }
+}

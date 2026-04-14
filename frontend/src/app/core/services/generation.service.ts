@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { ApiService } from './api.service';
 
 export interface GenerateResumeRequest {
-    master_resume_text: string;
+    master_resume_id?: string;
+    master_resume_text?: string;
     job_description: string;
     template_id: string;
 }
@@ -18,20 +18,20 @@ export interface GenerateResumeResponse {
 
 @Injectable({ providedIn: 'root' })
 export class GenerationService {
-    private readonly baseUrl = `${environment.apiUrl}/generation`;
+    private readonly endpoint = '/generation';
 
-    constructor(private http: HttpClient) { }
+    constructor(private api: ApiService) { }
 
     /** Generate a tailored resume from master resume + JD + template */
     generate(payload: GenerateResumeRequest): Observable<GenerateResumeResponse> {
-        return this.http.post<GenerateResumeResponse>(`${this.baseUrl}/generate`, payload);
+        return this.api.post<GenerateResumeResponse>(`${this.endpoint}/generate`, payload);
     }
 
     /** Compile raw LaTeX code into a PDF and download it */
     compileToPdf(latexCode: string, isTemplate: boolean = false): Observable<Blob> {
-        return this.http.post(`${this.baseUrl}/compile`, { latex_code: latexCode, is_template: isTemplate }, {
-            responseType: 'blob',
-        });
+        // ApiService.post normally assumes JSON response, using HttpClient directly for Blob response
+        // is actually easier here, or we can use the relative URL logic from ApiService
+        return this.api.postBlob(`${this.endpoint}/compile`, { latex_code: latexCode, is_template: isTemplate });
     }
 
     /** Trigger download of a Blob as a file */

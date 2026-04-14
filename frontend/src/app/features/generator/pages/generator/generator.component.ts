@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { TemplateService, TemplateListItem } from '../../../../core/services/template.service';
 import { GenerationService, GenerateResumeResponse } from '../../../../core/services/generation.service';
+import { ResumeService, MasterResume } from '../../../../core/services/resume.service';
 
 type WizardStep = 'template' | 'input' | 'result';
 
@@ -19,7 +20,9 @@ export class GeneratorComponent implements OnInit {
   // Wizard state
   currentStep = signal<WizardStep>('template');
   templates = signal<TemplateListItem[]>([]);
+  masterResumes = signal<MasterResume[]>([]);
   selectedTemplateId = signal<string | null>(null);
+  selectedMasterResumeId = signal<string | 'manual'>('manual');
   loading = signal(false);
   generating = signal(false);
   compiling = signal(false);
@@ -38,11 +41,24 @@ export class GeneratorComponent implements OnInit {
   constructor(
     private templateService: TemplateService,
     private generationService: GenerationService,
+    private resumeService: ResumeService,
     private sanitizer: DomSanitizer
   ) { }
 
   ngOnInit(): void {
     this.loadTemplates();
+    this.loadMasterResumes();
+  }
+
+  loadMasterResumes(): void {
+    this.resumeService.list().subscribe({
+      next: (resumes) => {
+        this.masterResumes.set(resumes);
+        if (resumes.length > 0) {
+          this.selectedMasterResumeId.set(resumes[0].id);
+        }
+      }
+    });
   }
 
   /** Step 1: Load templates */
@@ -80,7 +96,9 @@ export class GeneratorComponent implements OnInit {
 
   /** Step 2 → 3: Generate resume */
   generateResume(): void {
-    if (!this.masterResumeText.trim()) {
+    const isManual = this.selectedMasterResumeId() === 'manual';
+
+    if (isManual && !this.masterResumeText.trim()) {
       this.error.set('Please paste your master resume text.');
       return;
     }
@@ -92,11 +110,18 @@ export class GeneratorComponent implements OnInit {
     this.error.set(null);
     this.generating.set(true);
 
-    this.generationService.generate({
-      master_resume_text: this.masterResumeText,
+    const payload: any = {
       job_description: this.jobDescription,
       template_id: this.selectedTemplateId()!,
-    }).subscribe({
+    };
+
+    if (isManual) {
+      payload.master_resume_text = this.masterResumeText;
+    } else {
+      payload.master_resume_id = this.selectedMasterResumeId();
+    }
+
+    this.generationService.generate(payload).subscribe({
       next: (result) => {
         this.generatedResult.set(result);
         this.editableLatex = result.latex_source;
@@ -175,5 +200,9 @@ export class GeneratorComponent implements OnInit {
   getSelectedTemplateName(): string {
     const tpl = this.templates().find(t => t.id === this.selectedTemplateId());
     return tpl?.name || 'Unknown Template';
+  }
+
+  getSelectedMasterResume(): MasterResume | undefined {
+    return this.masterResumes().find(r => r.id === this.selectedMasterResumeId());
   }
 }

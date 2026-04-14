@@ -11,7 +11,8 @@ from datetime import datetime
 
 class GenerateResumeRequest(BaseModel):
     """Request to generate a tailored resume."""
-    master_resume_text: str = Field(..., min_length=10, description="Full text of the master resume")
+    master_resume_text: Optional[str] = Field(None, min_length=10, description="Full text of the master resume")
+    master_resume_id: Optional[str] = Field(None, description="ID of the stored master resume")
     job_description: str = Field(..., min_length=10, description="Target job description text")
     template_id: str = Field(..., description="ID of the LaTeX template to use")
 

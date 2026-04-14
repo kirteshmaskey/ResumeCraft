@@ -1,0 +1,146 @@
+.page-container {
+    padding: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    h1 {
+        margin: 0;
+        font-size: 1.875rem;
+        color: #111827;
+        font-weight: 700;
+    }
+}
+
+.loading {
+    text-align: center;
+    padding: 4rem;
+    color: #6b7280;
+
+    .spinner {
+        margin: 0 auto 1rem;
+        width: 40px;
+        height: 40px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.empty-state {
+    text-align: center;
+    padding: 5rem 2rem;
+    background: white;
+    border-radius: 12px;
+    border: 2px dashed #e5e7eb;
+    color: #6b7280;
+
+    .icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    p {
+        font-size: 1.125rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+.resume-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.resume-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        border-color: #3b82f6;
+    }
+}
+
+.resume-info {
+    h3 {
+        margin: 0 0 0.375rem 0;
+        font-size: 1.125rem;
+        color: #111827;
+        font-weight: 600;
+    }
+
+    .date {
+        margin: 0;
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+}
+
+.resume-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn {
+    padding: 0.625rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &.btn-primary {
+        background: #3b82f6;
+        color: white;
+        border: none;
+
+        &:hover {
+            background: #2563eb;
+        }
+    }
+
+    &.btn-secondary {
+        background: white;
+        border: 1px solid #d1d5db;
+        color: #374151;
+
+        &:hover {
+            background: #f9fafb;
+        }
+    }
+
+    &.btn-danger {
+        background: #fef2f2;
+        color: #ef4444;
+        border: 1px solid #fee2e2;
+
+        &:hover {
+            background: #fee2e2;
+        }
+    }
+}

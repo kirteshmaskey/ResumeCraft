@@ -61,9 +61,22 @@ async def generate_resume(
     ai = get_ai_service()
 
     try:
-        # 2. Parse master resume
-        logger.info("Parsing master resume (%d chars)", len(payload.master_resume_text))
-        resume_profile = await ai.parse_master_resume(payload.master_resume_text)
+        # 2. Get master resume text
+        master_resume_text = payload.master_resume_text
+        
+        if payload.master_resume_id:
+            from app.models.resume import MasterResume
+            resume = await db.get(MasterResume, payload.master_resume_id)
+            if not resume or resume.user_id != current_user.id:
+                raise HTTPException(status_code=404, detail="Master resume not found")
+            master_resume_text = resume.raw_text
+
+        if not master_resume_text:
+            raise HTTPException(status_code=400, detail="Master resume text or ID is required")
+
+        # 3. Parse master resume
+        logger.info("Parsing master resume (%d chars)", len(master_resume_text))
+        resume_profile = await ai.parse_master_resume(master_resume_text)
 
         # 3. Analyze JD
         logger.info("Analyzing JD (%d chars)", len(payload.job_description))
