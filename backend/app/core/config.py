@@ -33,8 +33,12 @@ class Settings(BaseSettings):
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
-    # ── AI / OpenAI ──────────────────────────────────────────────────────
-    OPENAI_API_KEY: str = ""  # Optional — fallback mode when empty
+    # ── AI Configuration (Unified Standard) ──────────────────────────────────
+    AI_PROVIDER: str = "openai"  # openai | azure | deepseek | grok | local
+    AI_API_KEY: str = ""
+    AI_MODEL: str = ""           # Model name or Deployment name
+    AI_ENDPOINT: str = ""        # Base URL or Azure Endpoint
+    AI_API_VERSION: str = ""     # Optional: Used mainly by Azure
 
     # ── Celery ───────────────────────────────────────────────────────────
     CELERY_BROKER_URL: str = "redis://localhost:6379/1"
